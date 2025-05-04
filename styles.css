@@ -12,6 +12,12 @@ header {
     border-bottom: 1px solid #ddd;
     color: #ddd;
 }
+
+.header-grid {
+    display: grid;
+    place-items: center;
+}
+
 .header-button {
     padding: 10px 20px;
     background-color: #007bff;
@@ -23,6 +29,13 @@ header {
 .logo {
     font-size: 24px;
     font-weight: bold;
+}
+.logo img {
+    width: 200px;       /* Ширина логотипа */
+    height: auto;      /* Автоматическая высота */
+    vertical-align: middle; /* Выравнивание по центру текста */
+    margin-right: 10px;
+    border-radius: 5px; /* Отступ от текста */
 }
 .contacts {
     font-size: 14px;
