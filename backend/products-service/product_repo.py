@@ -24,8 +24,10 @@ class ProductRepo():
         result = await session.execute(select(Product).filter_by(product_id = product_id))
         return ProductSchema.model_validate(result.scalars().all())
 
-    async def get_by_id():
+    async def chacge_by_id(self, product_id, session: AsyncSession) -> None:
         pass
 
     async def get_by_id():
         pass
+
+product_repo = ProductRepo()
