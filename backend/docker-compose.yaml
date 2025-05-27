@@ -4,8 +4,24 @@ services:
     container_name: product-service
     ports:
       - "8001:8001"
+    volumes:
+      - ./settings.toml:/product-service/settings.toml
     networks:
       - internal
+    restart: always
+    depends_on:
+      - postgres
+
+postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=mypassword
+    networks:
+      - internal
+    restart: always
 
 networks:
   internal:
+    driver: bridge
