@@ -1,0 +1,11 @@
+services:
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8001:8001"
+    networks:
+      - internal
+
+networks:
+  internal:

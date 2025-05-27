@@ -1,7 +1,7 @@
-[app_settings]
-app_port = 8000
+[product_service_settings]
+app_port = 8001
 app_version = "1.0.0"
-app_name = "pay_service"
+app_name = "product-service"
 app_host = "127.0.0.1"
 app_mount = "/api/v1"
 
