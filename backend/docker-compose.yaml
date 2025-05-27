@@ -12,15 +12,15 @@ services:
     depends_on:
       - postgres
 
-postgres:
-    image: postgres
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=mypassword
-    networks:
-      - internal
-    restart: always
+  postgres:
+      image: postgres
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_PASSWORD=mypassword
+      networks:
+        - internal
+      restart: always
 
 networks:
   internal:
