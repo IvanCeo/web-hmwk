@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from product_schema import ProductSchema
+from product_schema import ProductSchema, ProductCreateSchema
 from product_model import Product
 from product_repo import product_repo
 
@@ -12,7 +12,7 @@ class ProductService:
         products = await self.repo.get_all(session=session)
         return products
     
-    async def add_product(self, request: ProductSchema, session: AsyncSession) -> None:
+    async def add_product(self, request: ProductCreateSchema, session: AsyncSession) -> None:
         product = Product(
             product_name=request.product_name,
             in_stock = request.in_stock,
@@ -20,7 +20,7 @@ class ProductService:
             description = request.description
         )
         try:
-            await self.repo.add(product=product, session=AsyncSession)
+            await self.repo.add(product=product, session=session)
         except Exception as e:
             raise e
 

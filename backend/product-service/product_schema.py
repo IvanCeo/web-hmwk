@@ -3,6 +3,12 @@ from decimal import Decimal
 from datetime import datetime
 from uuid import UUID
 
+class ProductCreateSchema(BaseModel):
+    product_name: str
+    in_stock: int
+    price: Decimal
+    description: str
+
 
 class ProductSchema(BaseModel):
     product_id: UUID

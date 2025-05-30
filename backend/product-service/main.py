@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Depends
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST, HTTP_201_CREATED, HTTP_200_OK
 from starlette.responses import Response
 
-from product_schema import ProductSchema
+from product_schema import ProductSchema, ProductCreateSchema
 from product_services import product_service
 from db import get_session
 
@@ -18,13 +19,13 @@ app = FastAPI()
 #     product = await product_service.
 #     return 
 
-@app.get("/healthcheck")
+@app.get("/")
 async def healthcheck():
     return Response(status_code=HTTP_200_OK)
 
 @app.post("/product/")
 async def create_product(
-    request: ProductSchema,
+    request: ProductCreateSchema,
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -33,7 +34,7 @@ async def create_product(
     try:
         await product_service.add_product(request=request, session=session)
     except Exception as e:
-        return Response(content=e, status_code=HTTP_400_BAD_REQUEST)
+        return JSONResponse(content={"detail": str(e)}, status_code=HTTP_400_BAD_REQUEST)
     return Response(status_code=HTTP_201_CREATED)
 
 @app.get("/product/list")
