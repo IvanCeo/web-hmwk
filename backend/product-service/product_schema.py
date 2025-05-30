@@ -3,19 +3,21 @@ from decimal import Decimal
 from datetime import datetime
 from uuid import UUID
 
-class ProductCreateSchema(BaseModel):
+class ProductBaseSchema(BaseModel):
     product_name: str
     in_stock: int
     price: Decimal
     description: str
 
+class ProductCreateSchema(ProductBaseSchema):
+    pass
 
-class ProductSchema(BaseModel):
+class ProductUpdateSchema(ProductBaseSchema):
+    pass
+
+
+class ProductSchema(ProductBaseSchema):
     product_id: UUID
-    product_name: str
-    in_stock: int
-    price: Decimal
-    description: str
     created_at: datetime
     updated_at: datetime
 

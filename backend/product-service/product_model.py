@@ -1,5 +1,14 @@
 import uuid
-from sqlalchemy import Column, Integer, String, UUID, DECIMAL, DateTime
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    UUID,
+    DECIMAL,
+    DateTime,
+    CheckConstraint,
+)
+from sqlalchemy.sql import func
 from db import Base
 from datetime import datetime
 
@@ -12,6 +21,9 @@ class Product(Base):
     price = Column(DECIMAL, nullable=False)
     description = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.now(), nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.now(), onupdate=datetime.now(), nullable=False
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint('price >= 0', name='check_price_positive'),
+        CheckConstraint('in_stock >= 0', name='check_in_stock_non_negative'),
     )
