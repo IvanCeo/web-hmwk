@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+for i in {1..20}; do
+  echo "Просто ждем, когда другие ребята заработают"
+  sleep 1
+done
+
 echo "Ждём, пока Postgres будет доступен..."
 
 # Проверка доступности БД
@@ -16,8 +21,9 @@ done
 
 # Проверяем существование папки версий миграций
 if [[ ! -d "./migrations/versions" || $(ls ./migrations/versions | wc -l) -eq 0 ]]; then
-    echo "Создание миграции товаров..."
-    alembic revision --autogenerate -m "initial products"
+    echo "Создание миграции заказов..."
+    alembic revision --autogenerate -m "initial orders"
+    alembic stamp head
 else
     echo "Миграции уже существуют."
 fi

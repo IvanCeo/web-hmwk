@@ -5,6 +5,13 @@ app_name = "product-service"
 app_host = "0.0.0.0"
 app_mount = "/api/v1"
 
+[order_service_settings]
+app_port = 8002
+app_version = "1.0.0"
+app_name = "order-service"
+app_host = "0.0.0.0"
+app_mount = "/api/v1"
+
 
 [db_settings]
 db_name = "postgres"
