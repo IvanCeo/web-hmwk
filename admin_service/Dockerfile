@@ -1,12 +1,13 @@
-# FROM python:3.13-alpine
-FROM python:3.11-slim
+FROM python:3.13-alpine
+# FROM python:3.11-slim
 
 WORKDIR /app
 
 # RUN apk add --no-cache gcc musl-dev libffi-dev libpq
-RUN apt-get update \
- && apt-get install -y gcc libpq-dev libffi-dev curl \
- && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache gcc musl-dev libffi-dev postgresql-dev curl
+# RUN apt-get update \
+#  && apt-get install -y gcc libpq-dev libffi-dev curl \
+#  && rm -rf /var/lib/apt/lists/*
 
 RUN pip install uv
 

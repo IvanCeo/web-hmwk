@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель — Ламповый магазин</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-700 min-h-screen text-white font-sans">
+
+  <!-- Навигация -->
+  <nav class="bg-gray-800 px-6 py-4 flex justify-between items-center shadow-xl">
+    <div class="flex items-center gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="36" height="36" class="text-cyan-400 drop-shadow">
+        <path d="M12 .75a8.25 8.25 0 0 0-4.135 15.39c.686.398 1.115 1.008 1.134 1.623a.75.75 0 0 0 .577.706c.352.083.71.148 1.074.195.323.041.6-.218.6-.544v-4.661a6.714 6.714 0 0 1-.937-.171.75.75 0 1 1 .374-1.453 5.261 5.261 0 0 0 2.626 0 .75.75 0 1 1 .374 1.452 6.712 6.712 0 0 1-.937.172v4.66c0 .327.277.586.6.545.364-.047.722-.112 1.074-.195a.75.75 0 0 0 .577-.706c.02-.615.448-1.225 1.134-1.623A8.25 8.25 0 0 0 12 .75Z"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.013 19.9a.75.75 0 0 1 .877-.597 11.319 11.319 0 0 0 4.22 0 .75.75 0 1 1 .28 1.473 12.819 12.819 0 0 1-4.78 0 .75.75 0 0 1-.597-.876ZM9.754 22.344a.75.75 0 0 1 .824-.668 13.682 13.682 0 0 0 2.844 0 .75.75 0 1 1 .156 1.492 15.156 15.156 0 0 1-3.156 0 .75.75 0 0 1-.668-.824Z"/>
+      </svg>
+      <span class="text-2xl font-bold tracking-wide">ЛамповыйЗавод — Admin</span>
+    </div>
+    <div class="flex gap-4 items-center">
+      <a href="index.html" class="hover:text-cyan-400 transition">Магазин</a>
+      <a href="admin.html" class="hover:text-cyan-400 transition underline font-bold">Товары</a>
+      <a href="#" class="hover:text-cyan-400 transition">Заказы</a>
+      <a href="#" class="hover:text-cyan-400 transition">Пользователи</a>
+      <a href="logout.html" class="ml-4 px-4 py-1 bg-cyan-400 text-gray-900 rounded-lg font-bold hover:bg-cyan-300 transition">Выйти</a>
+    </div>
+  </nav>
+
+  <main class="container mx-auto px-4 md:px-0 mt-10">
+    <h1 class="text-4xl font-extrabold mb-8 text-center drop-shadow-lg">Админ-панель: Товары</h1>
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+      <div class="flex gap-2 items-center w-full md:w-auto">
+        <input type="text" id="filter-input" placeholder="Поиск по названию..." class="w-full md:w-72 px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white focus:border-cyan-400 focus:outline-none transition" />
+        <button id="filter-btn" class="px-4 py-2 rounded-lg bg-cyan-400 text-gray-900 font-bold hover:bg-cyan-300 transition">Поиск</button>
+      </div>
+      <button id="add-btn" class="px-6 py-2 rounded-lg bg-emerald-500 text-gray-900 font-bold hover:bg-emerald-400 transition flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        Добавить товар
+      </button>
+    </div>
+
+    <div class="overflow-x-auto bg-gray-800 rounded-2xl shadow-xl border border-gray-700">
+      <table class="min-w-full divide-y divide-gray-700 text-sm" id="admin-products-table">
+        <thead class="bg-gray-900">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold text-gray-300">ID</th>
+            <th class="px-4 py-3 text-left font-semibold text-gray-300">Название</th>
+            <th class="px-4 py-3 text-left font-semibold text-gray-300">Описание</th>
+            <th class="px-4 py-3 text-right font-semibold text-gray-300">Цена</th>
+            <th class="px-4 py-3 text-right font-semibold text-gray-300">В наличии</th>
+            <th class="px-4 py-3 text-center font-semibold text-gray-300">Действия</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700" id="admin-products-tbody">
+          <!-- JS вставит строки товаров -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Модалка добавления/редактирования (примерно, можно расширить) -->
+  <div id="product-modal" class="fixed inset-0 z-50 bg-black/50 hidden items-center justify-center">
+    <div class="bg-gray-900 rounded-xl p-8 max-w-lg w-full shadow-2xl border border-cyan-400">
+      <h2 id="modal-title" class="text-2xl font-bold text-cyan-400 mb-6">Добавить товар</h2>
+      <form id="product-form" class="flex flex-col gap-4">
+        <input type="hidden" id="modal-product-id" />
+        <div>
+          <label for="modal-name" class="block mb-1 text-gray-300">Название</label>
+          <input type="text" id="modal-name" class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:border-cyan-400 focus:outline-none" required />
+        </div>
+        <div>
+          <label for="modal-description" class="block mb-1 text-gray-300">Описание</label>
+          <textarea id="modal-description" class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:border-cyan-400 focus:outline-none" rows="3"></textarea>
+        </div>
+        <div>
+          <label for="modal-price" class="block mb-1 text-gray-300">Цена</label>
+          <input type="number" id="modal-price" class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:border-cyan-400 focus:outline-none" required />
+        </div>
+        <div>
+          <label for="modal-stock" class="block mb-1 text-gray-300">В наличии</label>
+          <input type="number" id="modal-stock" class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:border-cyan-400 focus:outline-none" required />
+        </div>
+        <div>
+            <label for="modal-image-url" class="block mb-1 text-gray-300">Ссылка на изображение</label>
+            <input type="text" id="modal-image-url" class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:border-cyan-400 focus:outline-none" required />
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" id="modal-cancel" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition">Отмена</button>
+          <button type="submit" class="px-6 py-2 bg-cyan-400 text-gray-900 rounded-lg font-bold hover:bg-cyan-300 transition">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="mt-12 p-4 bg-gray-900 text-center text-sm text-gray-400 rounded-t-2xl shadow-inner">
+    2025 © Ламповый завод — админка для управления каталогом.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  const tableBody = document.getElementById('admin-products-tbody');
+  const modal = document.getElementById('product-modal');
+  const form = document.getElementById('product-form');
+  const modalTitle = document.getElementById('modal-title');
+  const modalId = document.getElementById('modal-product-id');
+  const modalName = document.getElementById('modal-name');
+  const modalDescription = document.getElementById('modal-description');
+  const modalPrice = document.getElementById('modal-price');
+  const modalStock = document.getElementById('modal-stock');
+  let products = [];
+
+  // Получить токен из localStorage
+  function getToken() {
+    return localStorage.getItem('token');
+  }
+
+  // Загрузка товаров с бэкенда
+  async function loadProducts() {
+    try {
+      const res = await axios.get('/api/v1/products/', {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+      });
+      products = res.data;
+      renderProducts();
+    } catch (err) {
+      alert('Ошибка загрузки товаров: ' + (err?.response?.data?.detail || err.message));
+    }
+  }
+
+  function renderProducts() {
+    tableBody.innerHTML = "";
+    products.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="px-4 py-2">${p.id}</td>
+        <td class="px-4 py-2">${p.name}</td>
+        <td class="px-4 py-2">${p.description || ""}</td>
+        <td class="px-4 py-2 text-right">${p.price} руб.</td>
+        <td class="px-4 py-2 text-right">${p.stock_quantity}</td>
+        <td class="px-4 py-2 text-center flex flex-wrap gap-2 justify-center">
+          <button class="edit-btn px-3 py-1 bg-yellow-400 text-gray-900 rounded hover:bg-yellow-300 transition" data-id="${p.id}">Редактировать</button>
+          <button class="delete-btn px-3 py-1 bg-red-500 text-white rounded hover:bg-red-400 transition" data-id="${p.id}">Удалить</button>
+        </td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  // Фильтрация
+  document.getElementById('filter-btn').onclick = () => {
+    const query = document.getElementById('filter-input').value.trim().toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+    tableBody.innerHTML = "";
+    filtered.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="px-4 py-2">${p.id}</td>
+        <td class="px-4 py-2">${p.name}</td>
+        <td class="px-4 py-2">${p.description || ""}</td>
+        <td class="px-4 py-2 text-right">${p.price} руб.</td>
+        <td class="px-4 py-2 text-right">${p.stock_quantity}</td>
+        <td class="px-4 py-2 text-center flex flex-wrap gap-2 justify-center">
+          <button class="edit-btn px-3 py-1 bg-yellow-400 text-gray-900 rounded hover:bg-yellow-300 transition" data-id="${p.id}">Редактировать</button>
+          <button class="delete-btn px-3 py-1 bg-red-500 text-white rounded hover:bg-red-400 transition" data-id="${p.id}">Удалить</button>
+        </td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  };
+
+  // Открытие модалки "Добавить"
+  document.getElementById('add-btn').onclick = () => {
+    modalTitle.textContent = "Добавить товар";
+    form.reset();
+    modalId.value = "";
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  };
+
+  // Открытие модалки "Редактировать" и удаление
+  tableBody.onclick = async e => {
+    if (e.target.classList.contains('edit-btn')) {
+      const id = +e.target.dataset.id;
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      modalTitle.textContent = "Редактировать товар";
+      modalId.value = p.id;
+      modalName.value = p.name;
+      modalDescription.value = p.description;
+      modalPrice.value = p.price;
+      modalStock.value = p.stock_quantity;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    if (e.target.classList.contains('delete-btn')) {
+      const id = +e.target.dataset.id;
+      if (confirm("Удалить этот товар?")) {
+        try {
+          await axios.delete(`/api/v1/products/${id}`, {
+            headers: { 'Authorization': 'Bearer ' + getToken() }
+          });
+          products = products.filter(x => x.id !== id);
+          renderProducts();
+        } catch (err) {
+          alert('Ошибка удаления: ' + (err?.response?.data?.detail || err.message));
+        }
+      }
+    }
+  };
+
+  // Скрыть модалку
+  document.getElementById('modal-cancel').onclick = () => {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  };
+
+  // Submit формы (добавить/обновить)
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const id = modalId.value;
+    const data = {
+        name: modalName.value,
+        description: modalDescription.value,
+        price: +modalPrice.value,
+        stock_quantity: +modalStock.value,
+        image_url: document.getElementById('modal-image-url').value,
+        is_active: true
+    };
+    try {
+      if (id) {
+        // PATCH/PUT для обновления
+        await axios.put(`/api/v1/products/${id}`, data, {
+          headers: { 'Authorization': 'Bearer ' + getToken() }
+        });
+      } else {
+        // POST для добавления
+        await axios.post(`/api/v1/products/`, data, {
+          headers: { 'Authorization': 'Bearer ' + getToken() }
+        });
+      }
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      await loadProducts();
+    } catch (err) {
+      alert('Ошибка сохранения: ' + (err?.response?.data?.detail || err.message));
+    }
+  };
+
+  window.onload = loadProducts;
+</script>
+
+
+</body>
+</html>

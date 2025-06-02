@@ -1,11 +1,13 @@
-FROM python:3.11-slim
+# FROM python:3.11-slim
+FROM python:3.13-alpine
 
 WORKDIR /app
 
 # Системные зависимости, как в соседних сервисах
-RUN apt-get update \
- && apt-get install -y gcc libpq-dev libffi-dev curl \
- && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache gcc musl-dev libffi-dev postgresql-dev curl
+# RUN apt-get update \
+#  && apt-get install -y gcc libpq-dev libffi-dev curl \
+#  && rm -rf /var/lib/apt/lists/*
 
 # Утилита uv — wrapper для pip / uvicorn
 RUN pip install uv
@@ -15,7 +17,7 @@ COPY requirements.txt .
 RUN uv pip install --system -r requirements.txt
 
 # (Опционально) Dev-зависимости для локальной разработки / CI
-COPY requirements.dev.txt .
+# COPY requirements.dev.txt .
 # RUN uv pip install --system -r requirements.dev.txt
 
 # Копируем код приложения

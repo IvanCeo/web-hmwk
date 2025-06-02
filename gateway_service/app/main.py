@@ -40,12 +40,14 @@ async def proxy_media(path: str, request: Request):
 @app.api_route("/api/v1/{service}/{path:path}",
                methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def proxy(service: str, path: str, request: Request):
+    print(f"[GATEWAY] incoming: /api/v1/{service}/{path}")
     if service not in SERVICES:
+        print(f"[GATEWAY] unknown service: {service}")
         raise HTTPException(status_code=404, detail="Unknown service")
 
     # Modified: strip the /api/v1 prefix when proxying to the admin service
     if service == "admin":
-        target = f"{SERVICES[service]}/admin/{path}"
+        target = f"{SERVICES[service]}/api/v1/admin/{path}"
     else:
         target = f"{SERVICES[service]}/api/v1/{service}/{path}"
 

@@ -8,6 +8,8 @@ DATABASE_URL = (
     f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 )
 
+print("DATABASE_URL =", DATABASE_URL)
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 

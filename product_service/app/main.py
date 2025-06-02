@@ -1,9 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from contextlib import asynccontextmanager
+from app.models.product_model import Base
+from app.db.session import engine
 from app.api.v1.product_routes import router as product_router
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 # Разрешаем запросы с фронтенда через API Gateway
 app.add_middleware(
