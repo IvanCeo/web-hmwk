@@ -1,0 +1,149 @@
+services:
+  product_service:
+    build: ./product_service
+    container_name: product_service
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+    ports:
+      - "8001:8000"
+    env_file:
+      - ./product_service/.env
+    depends_on:
+      product_db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  product_db:
+    image: postgres:15
+    container_name: product_db
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./product_service/.env
+    volumes: # ⬅️ добавлено
+      - product_data:/var/lib/postgresql/data # ⬅️ добавлено
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  order_service:
+    build: ./order_service
+    container_name: order_service
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+    ports:
+      - "8002:8000"
+    env_file:
+      - ./order_service/.env
+    environment:
+      # Указываем gateway как точку входа в product_service
+      - PRODUCT_SERVICE_URL=http://gateway:8000
+    depends_on:
+      order_db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  order_db:
+    image: postgres:15
+    container_name: order_db
+    ports:
+      - "5434:5432"
+    env_file:
+      - ./order_service/.env
+    volumes: 
+      - order_data:/var/lib/postgresql/data 
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  admin_service:
+    build: ./admin_service
+    container_name: admin_service
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
+    ports:
+      - "8003:8000"
+    env_file:
+      - ./admin_service/.env
+    volumes:
+      # - ./media:/media
+      - media:/media                          # ← общий том для картинок
+    depends_on:
+      admin_db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  admin_db:
+    image: postgres:15
+    container_name: admin_db
+    ports:
+      - "5435:5432"
+    env_file:
+      - ./admin_service/.env
+    volumes: 
+      - admin_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+# -----------------------------
+  # API Gateway
+  gateway:
+    build: ./gateway_service
+    container_name: gateway
+    ports:
+      - "8000:8000"
+    volumes:
+      - media:/media
+    depends_on:
+      product_service:
+        condition: service_healthy
+      order_service:
+        condition: service_healthy
+      admin_service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 2
+
+
+# -----------------------------
+  # Static Frontend
+  frontend:
+    image: nginx:alpine
+    container_name: frontend
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+# -----------------------------
+volumes: 
+  product_data: 
+  order_data: 
+  admin_data: 
+  media:
